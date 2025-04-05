@@ -6,7 +6,11 @@ import 'package:reqres_user_management/services/api_service.dart';
 
 class AuthService extends ChangeNotifier {
   final ApiService _apiService = ApiService();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
   
   String? _token;
   bool _isLoading = false;

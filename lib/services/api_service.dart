@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String baseUrl = 'https://reqres.in/api';
+  final http.Client _client = http.Client();
 
   Future<http.Response> get(String endpoint, {String? token}) async {
-    final response = await http.get(
+    final response = await _client.get(
       Uri.parse('$baseUrl$endpoint'),
       headers: _getHeaders(token),
     );
@@ -13,7 +14,7 @@ class ApiService {
   }
 
   Future<http.Response> post(String endpoint, Map<String, dynamic> body, {String? token}) async {
-    final response = await http.post(
+    final response = await _client.post(
       Uri.parse('$baseUrl$endpoint'),
       headers: _getHeaders(token),
       body: jsonEncode(body),
@@ -22,7 +23,7 @@ class ApiService {
   }
 
   Future<http.Response> put(String endpoint, Map<String, dynamic> body, {String? token}) async {
-    final response = await http.put(
+    final response = await _client.put(
       Uri.parse('$baseUrl$endpoint'),
       headers: _getHeaders(token),
       body: jsonEncode(body),
@@ -31,7 +32,7 @@ class ApiService {
   }
 
   Future<http.Response> delete(String endpoint, {String? token}) async {
-    final response = await http.delete(
+    final response = await _client.delete(
       Uri.parse('$baseUrl$endpoint'),
       headers: _getHeaders(token),
     );
