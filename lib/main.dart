@@ -38,7 +38,20 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // This will be expanded later to check authentication status
-    return const LoginScreen();
+    final authService = Provider.of<AuthService>(context);
+    
+    // Show a loading indicator while checking auth status
+    if (authService.isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
+    // Redirect based on authentication status
+    return authService.isAuthenticated
+        ? const UserListScreen()
+        : const LoginScreen();
   }
 }
