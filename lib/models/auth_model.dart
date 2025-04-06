@@ -28,16 +28,18 @@ class RegisterRequest {
 
 class AuthResponse {
   final String? token;
+  final int? id;
   final String? error;
 
-  AuthResponse({this.token, this.error});
+  AuthResponse({this.token, this.id, this.error});
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
       token: json['token'],
+      id: json['id'],
       error: json['error'],
     );
   }
 
-  bool get isSuccess => token != null && token!.isNotEmpty;
+  bool get isSuccess => token != null || id != null;
 }

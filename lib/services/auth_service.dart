@@ -48,32 +48,44 @@ class AuthService extends ChangeNotifier {
 
     try {
       final request = LoginRequest(email: email, password: password);
+      print('Login request: ${request.toJson()}');
+      
       final response = await _apiService.post('/login', request.toJson());
+      print('Login response status: ${response.statusCode}');
+      print('Login response body: ${response.body}');
       
       if (response.statusCode == 200) {
-        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        final jsonData = jsonDecode(response.body);
+        print('Parsed login response: $jsonData');
         
-        if (authResponse.isSuccess) {
-          _token = authResponse.token;
+        // reqres.in returns token directly, not nested in a "token" field
+        if (jsonData.containsKey('token')) {
+          _token = jsonData['token'];
+          print('Got token: $_token');
           await _secureStorage.write(key: 'auth_token', value: _token);
           _isLoading = false;
           notifyListeners();
           return true;
         } else {
-          _error = authResponse.error ?? 'Authentication failed';
+          _error = 'Token not found in response';
           _isLoading = false;
           notifyListeners();
           return false;
         }
       } else {
-        final errorResponse = jsonDecode(response.body);
-        _error = errorResponse['error'] ?? 'Authentication failed';
+        try {
+          final errorResponse = jsonDecode(response.body);
+          _error = errorResponse['error'] ?? 'Authentication failed';
+        } catch (e) {
+          _error = 'Authentication failed (${response.statusCode})';
+        }
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      _error = 'Network error, please try again';
+      print('Login error: $e');
+      _error = 'Network error: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
       return false;
